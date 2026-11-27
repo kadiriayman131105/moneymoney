@@ -1,0 +1,139 @@
+@import "tailwindcss";
+
+:root {
+  color-scheme: light;
+  --bg: #f0f2f5;
+  --elev: #ffffff;
+  --ink: #050505;
+  --muted: #65676b;
+  --line: #e4e6eb;
+  --gold: #0866ff;
+  --good: #31a24c;
+  --bad: #e41e3f;
+  --soft: #f0f2f5;
+  --on: #ffffff;
+  --glow: rgba(8, 102, 255, 0.08);
+  --shadow: 0 1px 2px rgba(0, 0, 0, 0.1);
+}
+
+:root[data-theme="dark"] {
+  color-scheme: dark;
+  --bg: #18191a;
+  --elev: #242526;
+  --ink: #e4e6eb;
+  --muted: #b0b3b8;
+  --line: #3e4042;
+  --gold: #2d88ff;
+  --good: #31a24c;
+  --bad: #fa383e;
+  --soft: #3a3b3c;
+  --on: #ffffff;
+  --glow: rgba(45, 136, 255, 0.12);
+  --shadow: 0 1px 2px rgba(0, 0, 0, 0.4);
+}
+
+@theme inline {
+  --font-sans: system-ui, sans-serif;
+  --font-serif: "Iowan Old Style", Palatino, Georgia, serif;
+  --color-bg: var(--bg);
+  --color-elev: var(--elev);
+  --color-ink: var(--ink);
+  --color-muted: var(--muted);
+  --color-line: var(--line);
+  --color-gold: var(--gold);
+  --color-good: var(--good);
+  --color-bad: var(--bad);
+  --color-soft: var(--soft);
+  --color-on: var(--on);
+}
+
+html,
+body,
+#root {
+  min-height: 100%;
+}
+
+body {
+  margin: 0;
+  background: var(--bg);
+  color: var(--ink);
+  font-family: var(--font-sans);
+  overscroll-behavior: none;
+}
+
+button,
+input,
+select,
+textarea {
+  font: inherit;
+  color: inherit;
+}
+
+button,
+a {
+  touch-action: manipulation;
+}
+
+::placeholder {
+  color: var(--muted);
+}
+
+::selection {
+  background: #0866ff;
+  color: #ffffff;
+}
+
+:focus-visible {
+  outline: 2px solid var(--gold);
+  outline-offset: 2px;
+}
+
+.num {
+  font-variant-numeric: tabular-nums;
+}
+
+@media (min-width: 520px) {
+  body {
+    background: var(--bg);
+  }
+}
+
+.hero-card {
+  background:
+    radial-gradient(180px 120px at 100% 0%, rgba(228, 200, 138, 0.34), transparent 62%),
+    linear-gradient(165deg, #1a3d68 0%, #0c2748 48%, #071422 100%);
+  color: #f3ede3;
+  box-shadow: 0 20px 44px rgba(7, 20, 34, 0.28);
+}
+
+.hero-card .text-muted {
+  color: #c5d2e2;
+}
+
+.hero-card .text-good {
+  color: #e4c88a;
+}
+
+.hero-card .text-bad {
+  color: #f3ede3;
+}
+
+.hero-figure {
+  color: #e4c88a;
+}
+
+@keyframes shake {
+  0%,
+  100% { transform: translateX(0); }
+  25% { transform: translateX(-8px); }
+  75% { transform: translateX(8px); }
+}
+
+.shake {
+  animation: shake 0.35s ease;
+}
+
+input[type="date"],
+input[type="number"] {
+  color-scheme: inherit;
+}
