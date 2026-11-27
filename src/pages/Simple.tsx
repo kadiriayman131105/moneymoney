@@ -4,6 +4,7 @@ import { AmountField, Button, DateField, ErrorText, Segmented, Sheet, TextField 
 import { isISODate, shortDate, todayISO } from '../lib/dates.ts'
 import { amountToInput, mad, parseAmount, round2 } from '../lib/format.ts'
 import { readKept, writeKept } from '../lib/keep.ts'
+import { loadCopyFile, saveCopyFile } from '../lib/remote.ts'
 
 type Kind = 'credit' | 'loan'
 type View = 'now' | 'history'
@@ -109,6 +110,8 @@ export function Simple() {
   const [payAmount, setPayAmount] = useState('')
   const [payDate, setPayDate] = useState(todayISO())
   const [payError, setPayError] = useState<string | null>(null)
+  const [copyOpen, setCopyOpen] = useState(false)
+  const [copyError, setCopyError] = useState<string | null>(null)
 
   useEffect(() => {
     if (protect.current) return
@@ -258,11 +261,12 @@ export function Simple() {
   return (
     <div className="min-h-dvh">
       <header className="sticky top-0 z-30 border-b border-line bg-elev">
-        <div className="mx-auto flex h-14 max-w-md items-center justify-center px-4">
+        <div className="relative mx-auto flex h-14 max-w-md items-center justify-center px-4">
           <div className="flex rounded-full bg-soft p-1 text-[15px] font-semibold">
             <button type="button" className={space === 'moi' ? 'rounded-full bg-elev px-6 py-1.5 text-gold shadow-sm' : 'rounded-full px-6 py-1.5 text-muted'} onClick={() => setSpace('moi')}>Moi</button>
             <button type="button" className={space === 'nouran' ? 'rounded-full bg-elev px-6 py-1.5 text-gold shadow-sm' : 'rounded-full px-6 py-1.5 text-muted'} onClick={() => setSpace('nouran')}>Nouran</button>
           </div>
+          <button type="button" className="absolute right-4 text-sm font-semibold text-gold" onClick={() => { setCopyError(null); setCopyOpen(true) }}>Copie</button>
         </div>
       </header>
 
@@ -398,6 +402,25 @@ export function Simple() {
       </Sheet>
       </>
       )}
+      <Sheet open={copyOpen} title="Copie" onClose={() => setCopyOpen(false)}>
+        <p className="mb-3 text-sm text-muted">Garde un fichier de Moi et de Nouran. Sur le nouveau site, remets ce fichier. Ensuite la base en ligne garde les chiffres.</p>
+        {copyError && <p className="mb-3 text-sm font-semibold text-bad">{copyError}</p>}
+        <Button type="button" className="mb-2 w-full" onClick={() => { void saveCopyFile().catch(() => setCopyError('La copie n’a pas pu partir.')) }}>Garder une copie</Button>
+        <label className="block">
+          <input
+            className="hidden"
+            type="file"
+            accept="application/json,.json"
+            onChange={(event) => {
+              const file = event.target.files?.[0]
+              event.target.value = ''
+              if (!file) return
+              void loadCopyFile(file).then(() => window.location.reload()).catch(() => setCopyError('Ce fichier n’est pas une copie Moneymoney.'))
+            }}
+          />
+          <span className="block w-full rounded-lg bg-soft px-4 py-2.5 text-center text-[15px] font-semibold">Remettre une copie</span>
+        </label>
+      </Sheet>
     </div>
   )
 }

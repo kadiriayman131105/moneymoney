@@ -19,8 +19,15 @@ export function readKept(key: string) {
   return null
 }
 
-export function writeKept(key: string, value: string) {
+let onWrite: (() => void) | null = null
+
+export function watchKept(listener: () => void) {
+  onWrite = listener
+}
+
+export function writeKept(key: string, value: string, options?: { silent?: boolean }) {
   const current = localStorage.getItem(key)
   if (current && canParse(current)) localStorage.setItem(backupKey(key), current)
   localStorage.setItem(key, value)
+  if (!options?.silent) onWrite?.()
 }

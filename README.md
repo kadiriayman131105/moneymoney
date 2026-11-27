@@ -36,7 +36,7 @@ Le choix est au milieu de la barre du haut.
 3. Partager, puis **Sur l’écran d’accueil**, puis **Ajouter**.
 4. Ouvrir l’icône ensuite. Avec « Se souvenir de moi », le mot de passe n’est plus redemandé sur cet appareil.
 
-Ce qui est noté sur l’ordinateur ne se copie pas sur le téléphone. Chaque appareil garde sa propre liste. Une mise à jour de cette même adresse ne l’efface pas : les listes restent dans le téléphone, avec une copie de secours au cas où une mise à jour lirait mal l’ancienne liste.
+Ce qui est noté sur le téléphone reste sur le téléphone. Sur le site Vercel, les mêmes listes sont aussi gardées dans une petite base. Le bouton **Copie** écrit un fichier pour passer d’un appareil à l’autre, ou pour remettre les chiffres après un changement d’adresse.
 
 ## Technique
 
