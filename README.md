@@ -34,7 +34,7 @@ Le choix est au milieu de la barre du haut.
 1. Ouvrir le lien dans Safari.
 2. Entrer le mot de passe.
 3. Partager, puis **Sur l’écran d’accueil**, puis **Ajouter**.
-4. Ouvrir l’icône ensuite. L’app redemande le mot de passe quand elle a été fermée.
+4. Ouvrir l’icône ensuite. Avec « Se souvenir de moi », le mot de passe n’est plus redemandé sur cet appareil.
 
 Ce qui est noté sur l’ordinateur ne se copie pas sur le téléphone. Chaque appareil garde sa propre liste.
 

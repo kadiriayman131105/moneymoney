@@ -1,7 +1,8 @@
 const SALT = 'd51f0ed92c26d761305f09c737876878'
-const HASH = 'dc94ba7fc63cae28598b913b9bc1cff655531bc6de8ed9f6d946d75eb60b0ba4'
+const HASH = 'b8f32bb14d36150600606812e6344ad55868f5e44082debc90558c267980f43c'
 const ITERATIONS = 120_000
 const SESSION = 'mm-gate'
+const REMEMBER = 'mm-gate-keep'
 
 function bytesFromHex(hex: string) {
   const bytes = new Uint8Array(hex.length / 2)
@@ -17,10 +18,12 @@ function sameHex(left: string, right: string) {
 }
 
 export function isGateOpen() {
-  return sessionStorage.getItem(SESSION) === '1'
+  return localStorage.getItem(REMEMBER) === '1' || sessionStorage.getItem(SESSION) === '1'
 }
 
-export function openGate() {
+export function openGate(remember: boolean) {
+  if (remember) localStorage.setItem(REMEMBER, '1')
+  else localStorage.removeItem(REMEMBER)
   sessionStorage.setItem(SESSION, '1')
 }
 

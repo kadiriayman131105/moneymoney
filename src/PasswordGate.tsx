@@ -6,6 +6,7 @@ export function PasswordGate({ children }: { children: ReactNode }) {
   const [open, setOpen] = useState(isGateOpen)
   const [password, setPassword] = useState('')
   const [error, setError] = useState<string | null>(null)
+  const [remember, setRemember] = useState(true)
   const [busy, setBusy] = useState(false)
 
   async function submit(event: FormEvent) {
@@ -19,7 +20,7 @@ export function PasswordGate({ children }: { children: ReactNode }) {
       setError('Mauvais mot de passe.')
       return
     }
-    openGate()
+    openGate(remember)
     setOpen(true)
   }
 
@@ -43,6 +44,10 @@ export function PasswordGate({ children }: { children: ReactNode }) {
           />
         </label>
         {error && <p className="mb-3 text-sm font-semibold text-bad">{error}</p>}
+        <label className="mb-4 flex items-center gap-2 text-sm font-semibold">
+          <input type="checkbox" checked={remember} onChange={(event) => setRemember(event.target.checked)} />
+          Se souvenir de moi
+        </label>
         <Button type="submit" className="w-full" disabled={busy || password.length === 0}>Entrer</Button>
       </form>
     </div>
