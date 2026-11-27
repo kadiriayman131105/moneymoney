@@ -1,7 +1,8 @@
-import { useEffect, useState, type FormEvent } from 'react'
+import { useEffect, useRef, useState, type FormEvent } from 'react'
 import { AmountField, Button, DateField, ErrorText, Sheet, TextField } from '../components/ui.tsx'
 import { isISODate, shortDate, todayISO } from '../lib/dates.ts'
 import { amountToInput, mad, parseAmount, round2 } from '../lib/format.ts'
+import { readKept, writeKept } from '../lib/keep.ts'
 
 type Kind = 'sale' | 'credit' | 'purchase' | 'staff'
 
@@ -102,25 +103,31 @@ function normalize(row: Partial<Move>): Move | null {
   }
 }
 
-function load(): Book {
+function load(): { book: Book; protect: boolean } {
+  const empty = { opening: 0, moves: [] }
   try {
-    const raw = localStorage.getItem(KEY)
-    if (!raw) return { opening: 0, moves: [] }
+    const raw = readKept(KEY)
+    if (!raw) return { book: empty, protect: false }
     const data = JSON.parse(raw) as { opening?: number; moves?: Partial<Move>[] }
-    return {
+    const book = {
       opening: typeof data.opening === 'number' ? data.opening : 0,
       moves: Array.isArray(data.moves) ? data.moves.flatMap((row) => {
         const move = normalize(row)
         return move ? [move] : []
       }) : [],
     }
+    const had = (typeof data.opening === 'number' && data.opening !== 0) || (Array.isArray(data.moves) && data.moves.length > 0)
+    const blank = book.opening === 0 && book.moves.length === 0
+    return { book, protect: had && blank }
   } catch {
-    return { opening: 0, moves: [] }
+    return { book: empty, protect: true }
   }
 }
 
 export function NouranCaisse() {
-  const [book, setBook] = useState<Book>(load)
+  const [loaded] = useState(load)
+  const protect = useRef(loaded.protect)
+  const [book, setBook] = useState<Book>(loaded.book)
   const [query, setQuery] = useState('')
   const [open, setOpen] = useState(false)
   const [openingOpen, setOpeningOpen] = useState(false)
@@ -138,7 +145,8 @@ export function NouranCaisse() {
   const [payError, setPayError] = useState<string | null>(null)
 
   useEffect(() => {
-    localStorage.setItem(KEY, JSON.stringify(book))
+    if (protect.current) return
+    writeKept(KEY, JSON.stringify(book))
   }, [book])
 
   const editing = book.moves.find((move) => move.id === editId) ?? null

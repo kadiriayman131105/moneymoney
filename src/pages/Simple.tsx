@@ -1,8 +1,9 @@
-import { useEffect, useState, type FormEvent } from 'react'
+import { useEffect, useRef, useState, type FormEvent } from 'react'
 import { NouranCaisse } from './NouranCaisse.tsx'
 import { AmountField, Button, DateField, ErrorText, Segmented, Sheet, TextField } from '../components/ui.tsx'
 import { isISODate, shortDate, todayISO } from '../lib/dates.ts'
 import { amountToInput, mad, parseAmount, round2 } from '../lib/format.ts'
+import { readKept, writeKept } from '../lib/keep.ts'
 
 type Kind = 'credit' | 'loan'
 type View = 'now' | 'history'
@@ -73,23 +74,26 @@ function normalize(row: Partial<Entry>): Entry | null {
   }
 }
 
-function load(): Entry[] {
+function load(): { entries: Entry[]; protect: boolean } {
   try {
-    const raw = localStorage.getItem(KEY)
-    if (!raw) return []
+    const raw = readKept(KEY)
+    if (!raw) return { entries: [], protect: false }
     const data = JSON.parse(raw) as Partial<Entry>[]
-    if (!Array.isArray(data)) return []
-    return data.flatMap((row) => {
+    if (!Array.isArray(data)) return { entries: [], protect: true }
+    const entries = data.flatMap((row) => {
       const entry = normalize(row)
       return entry ? [entry] : []
     })
+    return { entries, protect: data.length > 0 && entries.length === 0 }
   } catch {
-    return []
+    return { entries: [], protect: true }
   }
 }
 
 export function Simple() {
-  const [entries, setEntries] = useState<Entry[]>(load)
+  const [loaded] = useState(load)
+  const protect = useRef(loaded.protect)
+  const [entries, setEntries] = useState<Entry[]>(loaded.entries)
   const [view, setView] = useState<View>('now')
   const [space, setSpace] = useState<'moi' | 'nouran'>('moi')
   const [open, setOpen] = useState(false)
@@ -107,7 +111,8 @@ export function Simple() {
   const [payError, setPayError] = useState<string | null>(null)
 
   useEffect(() => {
-    localStorage.setItem(KEY, JSON.stringify(entries))
+    if (protect.current) return
+    writeKept(KEY, JSON.stringify(entries))
   }, [entries])
 
   const editing = entries.find((entry) => entry.id === editId) ?? null
